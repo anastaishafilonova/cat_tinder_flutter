@@ -14,9 +14,9 @@
 
 ## Screenshots
 
-![(assets/screen1.png)]
-![(assets/screen2.png)]
+![](assets/screen1.png)
+![](assets/screen2.png)
 
 ## Apk
 
-
+https://drive.google.com/file/d/1bA37TSf-9h3IlznrvRCHDD1iLstkga1x/view?usp=sharing
