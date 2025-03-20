@@ -34,6 +34,11 @@ dependencies:
   http: any
   cached_network_image: ^3.2.3
   logger: any
+  flutter_bloc: ^8.0.1
+  equatable: ^2.0.3
+  get_it: ^7.2.0
+  flutter_dotenv: ^5.1.0
+  injectable: ^2.1.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -42,6 +47,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  injectable_generator: ^2.1.0
+  build_runner: ^2.4.0
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -74,6 +81,8 @@ flutter:
   assets:
      - assets/like.svg
      - assets/dislike.svg
+     - assets/background_1.jpg
+     - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
