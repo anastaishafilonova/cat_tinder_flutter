@@ -8,9 +8,10 @@ class Cat {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is Cat && runtimeType == other.runtimeType && imageUrl == other.imageUrl;
+      other is Cat &&
+          runtimeType == other.runtimeType &&
+          imageUrl == other.imageUrl;
 
   @override
   int get hashCode => imageUrl.hashCode;
 }
-

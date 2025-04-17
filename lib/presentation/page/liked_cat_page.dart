@@ -31,7 +31,10 @@ class _LikedCatsPageState extends State<LikedCatsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final allBreeds = ['All', ...{...localLikedCats.map((e) => e.cat.breed)}];
+    final allBreeds = [
+      'All',
+      ...{...localLikedCats.map((e) => e.cat.breed)},
+    ];
 
     return WillPopScope(
       onWillPop: () async {
@@ -39,14 +42,14 @@ class _LikedCatsPageState extends State<LikedCatsPage> {
         return false;
       },
       child: Scaffold(
-        appBar: AppBar(title: Text('Liked Cats'), backgroundColor: Colors.black54),
+        appBar: AppBar(
+          title: Text('Liked Cats'),
+          backgroundColor: Colors.black54,
+        ),
         body: Stack(
           fit: StackFit.expand,
           children: [
-            Image.asset(
-              'assets/background_1.jpg',
-              fit: BoxFit.cover,
-            ),
+            Image.asset('assets/background_1.jpg', fit: BoxFit.cover),
             Container(color: Colors.black.withOpacity(0.3)),
             Column(
               children: [
@@ -61,7 +64,9 @@ class _LikedCatsPageState extends State<LikedCatsPage> {
                   child: DropdownMenuTheme(
                     data: DropdownMenuThemeData(
                       menuStyle: MenuStyle(
-                        backgroundColor: WidgetStateProperty.all(Colors.white60),
+                        backgroundColor: WidgetStateProperty.all(
+                          Colors.white60,
+                        ),
                       ),
                     ),
                     child: DropdownButtonHideUnderline(
@@ -72,12 +77,13 @@ class _LikedCatsPageState extends State<LikedCatsPage> {
                             selectedBreed = value!;
                           });
                         },
-                        items: allBreeds.map((breed) {
-                          return DropdownMenuItem(
-                            value: breed,
-                            child: Text(breed),
-                          );
-                        }).toList(),
+                        items:
+                            allBreeds.map((breed) {
+                              return DropdownMenuItem(
+                                value: breed,
+                                child: Text(breed),
+                              );
+                            }).toList(),
                       ),
                     ),
                   ),
@@ -88,7 +94,10 @@ class _LikedCatsPageState extends State<LikedCatsPage> {
                     itemBuilder: (context, index) {
                       final likedCat = filteredCats[index];
                       return Container(
-                        margin: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        margin: EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.white60,
                           borderRadius: BorderRadius.circular(16),
@@ -113,7 +122,10 @@ class _LikedCatsPageState extends State<LikedCatsPage> {
                                   children: [
                                     Text(
                                       likedCat.cat.breed,
-                                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                                      style: TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                     SizedBox(height: 8),
                                     Text(
@@ -124,14 +136,21 @@ class _LikedCatsPageState extends State<LikedCatsPage> {
                                 ),
                               ),
                               IconButton(
-                                icon: Icon(Icons.delete, color: Colors.red, size: 32),
+                                icon: Icon(
+                                  Icons.delete,
+                                  color: Colors.red,
+                                  size: 32,
+                                ),
                                 onPressed: () {
                                   setState(() {
                                     localLikedCats.remove(likedCat);
                                     getIt<CatCubit>().removeCat(likedCat);
 
                                     if (selectedBreed != 'All' &&
-                                        !localLikedCats.any((cat) => cat.cat.breed == selectedBreed)) {
+                                        !localLikedCats.any(
+                                          (cat) =>
+                                              cat.cat.breed == selectedBreed,
+                                        )) {
                                       selectedBreed = 'All';
                                     }
                                   });

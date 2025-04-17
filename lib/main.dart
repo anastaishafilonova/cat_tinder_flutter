@@ -9,12 +9,7 @@ Future<void> main() async {
   configureDependencies();
   await dotenv.load(fileName: ".env");
 
-  runApp(
-    BlocProvider(
-      create: (_) => getIt<CatCubit>(),
-      child: const MyApp(),
-    ),
-  );
+  runApp(BlocProvider(create: (_) => getIt<CatCubit>(), child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {

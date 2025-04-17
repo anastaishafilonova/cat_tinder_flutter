@@ -66,7 +66,9 @@ class CatHomePageState extends State<CatHomePage> {
 
     try {
       final response = await http.get(
-        Uri.parse('https://api.thecatapi.com/v1/images/search?limit=6&has_breeds=1&size=small&mime_types=jpg'),
+        Uri.parse(
+          'https://api.thecatapi.com/v1/images/search?limit=6&has_breeds=1&size=small&mime_types=jpg',
+        ),
         headers: {'x-api-key': myApiKey},
       );
 
@@ -75,9 +77,9 @@ class CatHomePageState extends State<CatHomePage> {
         for (var item in data) {
           if (item['breeds'] != null && item['breeds'].isNotEmpty) {
             final cat = Cat(
-                item['url'],
-                item['breeds'][0]['name'],
-                item['breeds'][0]['description']
+              item['url'],
+              item['breeds'][0]['name'],
+              item['breeds'][0]['description'],
             );
             if (!catQueue.contains(cat)) {
               catQueue.add(cat);
@@ -91,11 +93,12 @@ class CatHomePageState extends State<CatHomePage> {
     } catch (e) {
       logger.e('Ошибка загрузки: $e');
       if (mounted) {
-        showErrorDialog('Не удалось загрузить котиков. Проверьте соединение с интернетом.');
+        showErrorDialog(
+          'Не удалось загрузить котиков. Проверьте соединение с интернетом.',
+        );
       }
     }
   }
-
 
   void likeCat() {
     if (isLiking || imageUrl.isEmpty) return;
@@ -130,11 +133,12 @@ class CatHomePageState extends State<CatHomePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CatDetailPage(
-          imageUrl: imageUrl,
-          breed: breed,
-          description: description,
-        ),
+        builder:
+            (context) => CatDetailPage(
+              imageUrl: imageUrl,
+              breed: breed,
+              description: description,
+            ),
       ),
     );
   }
@@ -143,9 +147,9 @@ class CatHomePageState extends State<CatHomePage> {
     final updatedLikedCats = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => LikedCatsPage(
-          likedCats: getIt<CatCubit>().state.likedCats,
-        ),
+        builder:
+            (context) =>
+                LikedCatsPage(likedCats: getIt<CatCubit>().state.likedCats),
       ),
     );
 
@@ -187,17 +191,17 @@ class CatHomePageState extends State<CatHomePage> {
           TextButton.icon(
             icon: Icon(Icons.favorite, color: Colors.black54, size: 24),
             onPressed: openLikedCatsPage,
-            label: Text('Favourites', style: TextStyle(fontSize: 24, color: Colors.black54)),
+            label: Text(
+              'Favourites',
+              style: TextStyle(fontSize: 24, color: Colors.black54),
+            ),
           ),
         ],
       ),
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset(
-            'assets/background_1.jpg',
-            fit: BoxFit.cover,
-          ),
+          Image.asset('assets/background_1.jpg', fit: BoxFit.cover),
           Container(color: Colors.black.withAlpha((255 * 0.3).round())),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -242,8 +246,13 @@ class CatHomePageState extends State<CatHomePage> {
                                 CachedNetworkImage(
                                   imageUrl: imageUrl,
                                   fit: BoxFit.cover,
-                                  placeholder: (context, url) => Center(child: CircularProgressIndicator()),
-                                  errorWidget: (context, url, error) => Icon(Icons.error),
+                                  placeholder:
+                                      (context, url) => Center(
+                                        child: CircularProgressIndicator(),
+                                      ),
+                                  errorWidget:
+                                      (context, url, error) =>
+                                          Icon(Icons.error),
                                 ),
                                 Container(
                                   decoration: BoxDecoration(
@@ -251,9 +260,13 @@ class CatHomePageState extends State<CatHomePage> {
                                       begin: Alignment.topCenter,
                                       end: Alignment.bottomCenter,
                                       colors: [
-                                        Colors.black.withAlpha((255 * 0.6).round()),
+                                        Colors.black.withAlpha(
+                                          (255 * 0.6).round(),
+                                        ),
                                         Colors.transparent,
-                                        Colors.black.withAlpha((255 * 0.8).round()),
+                                        Colors.black.withAlpha(
+                                          (255 * 0.8).round(),
+                                        ),
                                       ],
                                     ),
                                   ),
@@ -270,7 +283,10 @@ class CatHomePageState extends State<CatHomePage> {
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
                                       shadows: [
-                                        Shadow(color: Colors.black54, blurRadius: 6),
+                                        Shadow(
+                                          color: Colors.black54,
+                                          blurRadius: 6,
+                                        ),
                                       ],
                                     ),
                                   ),
@@ -291,18 +307,32 @@ class CatHomePageState extends State<CatHomePage> {
                     children: [
                       IconButton(
                         onPressed: dislikeCat,
-                        icon: Icon(Icons.heart_broken, color: Colors.red, size: 64),
+                        icon: Icon(
+                          Icons.heart_broken,
+                          color: Colors.red,
+                          size: 64,
+                        ),
                       ),
-                      Text("$dislikeCount", style: TextStyle(fontSize: 32, color: Colors.white)),
+                      Text(
+                        "$dislikeCount",
+                        style: TextStyle(fontSize: 32, color: Colors.white),
+                      ),
                     ],
                   ),
                   Column(
                     children: [
                       IconButton(
                         onPressed: likeCat,
-                        icon: Icon(Icons.favorite, color: Colors.green, size: 64),
+                        icon: Icon(
+                          Icons.favorite,
+                          color: Colors.green,
+                          size: 64,
+                        ),
                       ),
-                      Text("$likeCount", style: TextStyle(fontSize: 32, color: Colors.white)),
+                      Text(
+                        "$likeCount",
+                        style: TextStyle(fontSize: 32, color: Colors.white),
+                      ),
                     ],
                   ),
                 ],

@@ -6,7 +6,12 @@ class CatDetailPage extends StatelessWidget {
   final String breed;
   final String description;
 
-  const CatDetailPage({super.key, required this.imageUrl, required this.breed, required this.description});
+  const CatDetailPage({
+    super.key,
+    required this.imageUrl,
+    required this.breed,
+    required this.description,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +32,10 @@ class CatDetailPage extends StatelessWidget {
               ),
             ),
             SizedBox(height: 20),
-            Text(breed, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            Text(
+              breed,
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
             Text(description, style: TextStyle(fontSize: 16)),
           ],
         ),
