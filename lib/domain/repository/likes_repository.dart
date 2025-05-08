@@ -1,21 +1,40 @@
+import '../../database.dart';
+import '../model/cat.dart';
 import '../model/liked_cat.dart';
 
 class LikedCatsRepository {
-  final List<LikedCat> _likedCats = [];
+  final AppDatabase _db;
 
-  List<LikedCat> getAll() => List.unmodifiable(_likedCats);
+  LikedCatsRepository(this._db);
 
-  void add(LikedCat likedCat) {
-    _likedCats.add(likedCat);
+  Future<List<LikedCat>> getAll() async {
+    final cats = await _db.getLikedCats();
+    return cats.map((cat) => LikedCat(cat)).toList();
   }
 
-  void remove(LikedCat likedCat) {
-    _likedCats.remove(likedCat);
+  Future<void> remove(LikedCat cat) async {
+    await _db.updateCatStatus(cat.cat.imageUrl, 'none');
   }
 
-  void updateAll(List<LikedCat> newList) {
-    _likedCats
-      ..clear()
-      ..addAll(newList);
+  Future<void> add(LikedCat likedCat) async {
+    await _db.updateCatStatus(likedCat.cat.imageUrl, 'liked');
+  }
+
+  Future<void> dislike(CatModel cat) async {
+    await _db.updateCatStatus(cat.imageUrl, 'disliked');
+  }
+
+  Future<void> updateAll(List<LikedCat> newList) async {
+    final allCats = await _db.getAllCats();
+    for (final cat in allCats) {
+      final status = newList.any((lc) => lc.cat.imageUrl == cat.imageUrl)
+          ? 'liked'
+          : 'none';
+      await _db.updateCatStatus(cat.imageUrl, status);
+    }
+  }
+
+  Future<List<Cat>> getAllFromDb() async {
+    return await _db.getAllCatsWithStatus();
   }
 }

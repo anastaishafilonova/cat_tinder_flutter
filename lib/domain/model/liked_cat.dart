@@ -1,8 +1,7 @@
 import 'cat.dart';
 
 class LikedCat {
-  final Cat cat;
-  final DateTime likedAt;
+  final CatModel cat;
 
-  LikedCat(this.cat, [DateTime? likedAt]) : likedAt = likedAt ?? DateTime.now();
+  LikedCat(this.cat);
 }

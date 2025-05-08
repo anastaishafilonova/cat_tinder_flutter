@@ -1,14 +1,14 @@
-class Cat {
+class CatModel {
   String imageUrl;
   String breed;
   String description;
 
-  Cat(this.imageUrl, this.breed, this.description);
+  CatModel(this.imageUrl, this.breed, this.description);
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is Cat &&
+      other is CatModel &&
           runtimeType == other.runtimeType &&
           imageUrl == other.imageUrl;
 

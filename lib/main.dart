@@ -12,6 +12,7 @@ Future<void> main() async {
   runApp(BlocProvider(create: (_) => getIt<CatCubit>(), child: const MyApp()));
 }
 
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
