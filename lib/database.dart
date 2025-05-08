@@ -69,6 +69,18 @@ class AppDatabase extends _$AppDatabase {
   Future<void> clearDatabase() async {
     await delete(cats).go();
   }
+
+  Future<Map<String, int>> getLikeDislikeCounts() async {
+    final allCats = await getAllCatsWithStatus();
+    return {
+      'likes': allCats.where((c) => c.status == 'liked').length,
+      'dislikes': allCats.where((c) => c.status == 'disliked').length,
+    };
+  }
+
+  Stream<void> watchChanges() {
+    return select(cats).watch().map((_) {});
+  }
 }
 
 LazyDatabase _openConnection() {

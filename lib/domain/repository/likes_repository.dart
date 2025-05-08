@@ -37,4 +37,12 @@ class LikedCatsRepository {
   Future<List<Cat>> getAllFromDb() async {
     return await _db.getAllCatsWithStatus();
   }
+
+  Future<Map<String, int>> getCounts() async {
+    return await _db.getLikeDislikeCounts();
+  }
+
+  Stream<void> watchChanges() {
+    return _db.watchChanges();
+  }
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
+import 'package:drift/drift.dart' hide Column;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -42,7 +43,6 @@ class CatHomePageState extends State<CatHomePage> {
   }
 
   void _initCats() {
-    printAllCatsWithStatusAndBreed();
     fetchMoreCats().then((_) => fetchNextCat());
   }
 
@@ -50,7 +50,15 @@ class CatHomePageState extends State<CatHomePage> {
     _cubitSubscription = getIt<CatCubit>().stream.listen((state) {
       if (mounted) {
         setState(() {});
+        _setupCubitListener();
+        _setupDbListener();
       }
+    });
+  }
+
+  void _setupDbListener() {
+    db.cats.select().watch().listen((_) {
+      getIt<CatCubit>().refreshState();
     });
   }
 
@@ -60,64 +68,26 @@ class CatHomePageState extends State<CatHomePage> {
     super.dispose();
   }
 
-  int get likeCount => BlocProvider.of<CatCubit>(context).state.likeCount;
-  int get dislikeCount => BlocProvider.of<CatCubit>(context).state.dislikeCount;
   List<LikedCat> get likedCats => getIt<CatCubit>().state.likedCats;
 
-  void likeCat() {
+  void likeCat() async {
     if (isLiking || imageUrl.isEmpty) return;
 
     setState(() => isLiking = true);
     final cat = CatModel(imageUrl, breed, description);
-    getIt<CatCubit>().likeCat(cat).whenComplete(() {
-      if (mounted) {
-        setState(() => isLiking = false);
-        print('Liked cat, new likeCount: $likeCount');
-        fetchNextCat();
-      }
-    });
+    await getIt<CatCubit>().likeCat(cat);
+    setState(() => isLiking = false);
+    fetchNextCat();
   }
 
-  void dislikeCat() {
+  void dislikeCat() async {
     if (isLiking || imageUrl.isEmpty) return;
 
     setState(() => isLiking = true);
     final cat = CatModel(imageUrl, breed, description);
-    getIt<CatCubit>().dislikeCat(cat).whenComplete(() {
-      if (mounted) {
-        setState(() => isLiking = false);
-        fetchNextCat();
-      }
-    });
-  }
-
-  Future<void> printAllCatsWithStatusAndBreed() async {
-    final db = AppDatabase(); // Или используйте ваш экземпляр базы данных
-    final allCats = await db.getAllCatsWithStatus(); // Используем существующий метод
-    if (allCats.isEmpty) {
-      print('В базе данных нет котов');
-      return;
-    }
-
-    print('\nСписок всех котов в базе данных:');
-    print('--------------------------------');
-    print('| №  | Статус      | Порода              | URL изображения');
-    print('--------------------------------');
-
-    int counter = 1;
-    for (final cat in allCats) {
-      final status = cat.status ?? 'none';
-      final breed = cat.breed ?? 'Неизвестная порода';
-      final url = cat.imageUrl.length > 30
-          ? '${cat.imageUrl.substring(0, 27)}...'
-          : cat.imageUrl;
-
-      print('| ${counter.toString().padLeft(2)} | ${status.padRight(10)} | ${breed.padRight(18)} | $url');
-      counter++;
-    }
-
-    print('--------------------------------');
-    print('Всего котов: ${allCats.length}');
+    await getIt<CatCubit>().dislikeCat(cat);
+    setState(() => isLiking = false);
+    fetchNextCat();
   }
 
   Future<void> fetchNextCat() async {
