@@ -9,6 +9,9 @@ Future<void> main() async {
   configureDependencies();
   await dotenv.load(fileName: ".env");
 
+  WidgetsFlutterBinding.ensureInitialized();
+  PaintingBinding.instance.imageCache.maximumSizeBytes = 300 << 20;
+  
   runApp(BlocProvider(create: (_) => getIt<CatCubit>(), child: const MyApp()));
 }
 

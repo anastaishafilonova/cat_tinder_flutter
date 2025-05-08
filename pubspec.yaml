@@ -32,7 +32,8 @@ dependencies:
     sdk: flutter
   flutter_svg: ^2.0.5
   http: any
-  cached_network_image: ^3.2.3
+  connectivity_plus: ^5.0.2
+  cached_network_image: ^3.3.0
   logger: any
   flutter_bloc: ^8.0.1
   equatable: ^2.0.3
@@ -55,14 +56,12 @@ dev_dependencies:
   drift_dev: ^2.26.1
   injectable_generator: ^2.1.0
   build_runner: ^2.4.0
-
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
   flutter_lints: ^5.0.0
-  flutter_launcher_icons: ^0.13.1
+  flutter_launcher_icons: ^0.14.3
+  mocktail: ^1.0.0
+  bloc_test: ^9.1.0
+  test: ^1.24.0
+  stream_transform: ^2.0.0
 
 flutter_launcher_icons:
   android: true

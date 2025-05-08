@@ -28,7 +28,7 @@ class LikedCatsPage extends StatelessWidget {
 class _LikedCatsContent extends StatefulWidget {
   final List<LikedCat> likedCats;
 
-  const _LikedCatsContent({super.key, required this.likedCats});
+  const _LikedCatsContent({required this.likedCats});
 
   @override
   State<_LikedCatsContent> createState() => _LikedCatsPageState();
@@ -46,15 +46,13 @@ class _LikedCatsPageState extends State<_LikedCatsContent> {
   void didUpdateWidget(covariant _LikedCatsContent oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    // Если список избранных котов стал пустым, сбрасываем фильтр на "All"
     if (widget.likedCats.isEmpty && selectedBreed != 'All') {
       setState(() {
         selectedBreed = 'All';
       });
     }
 
-    // Если выбранная порода больше не существует в списке, сбрасываем на "All"
-    final breeds = widget.likedCats.map((e) => e.cat.breed).where((b) => b != null).toSet();
+    final breeds = widget.likedCats.map((e) => e.cat.breed).toSet();
     if (selectedBreed != 'All' && !breeds.contains(selectedBreed)) {
       setState(() {
         selectedBreed = 'All';
@@ -70,14 +68,15 @@ class _LikedCatsPageState extends State<_LikedCatsContent> {
     )..add('All')..addAll(
       widget.likedCats
           .map((e) => e.cat.breed)
-          .where((b) => b != null)
           .cast<String>(),
     );
 
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.pop(context);
-        return false;
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        if (!didPop) {
+          Navigator.pop(context);
+        }
       },
       child: Scaffold(
         appBar: AppBar(
@@ -88,11 +87,11 @@ class _LikedCatsPageState extends State<_LikedCatsContent> {
           fit: StackFit.expand,
           children: [
             Image.asset('assets/background_1.jpg', fit: BoxFit.cover),
-            Container(color: Colors.black.withOpacity(0.3)),
+            Container(color: Color.fromRGBO(0, 0, 0, 0.3)),
             Column(
               children: [
                 const SizedBox(height: 20),
-                if (widget.likedCats.isNotEmpty) // Показываем фильтр только если есть коты
+                if (widget.likedCats.isNotEmpty)
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 100),
                     decoration: BoxDecoration(
@@ -143,8 +142,8 @@ class _LikedCatsPageState extends State<_LikedCatsContent> {
                             MaterialPageRoute(
                               builder: (context) => CatDetailPage(
                                 imageUrl: likedCat.cat.imageUrl,
-                                breed: likedCat.cat.breed ?? 'Unknown breed',
-                                description: likedCat.cat.description ?? '',
+                                breed: likedCat.cat.breed,
+                                description: likedCat.cat.description,
                               ),
                             ),
                           );
@@ -182,7 +181,7 @@ class _LikedCatsPageState extends State<_LikedCatsContent> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        likedCat.cat.breed ?? 'Unknown breed',
+                                        likedCat.cat.breed,
                                         style: const TextStyle(
                                           fontSize: 24,
                                           fontWeight: FontWeight.bold,

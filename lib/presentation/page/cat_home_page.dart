@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
-import 'package:drift/drift.dart' hide Column;
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -35,31 +35,73 @@ class CatHomePageState extends State<CatHomePage> {
   bool showImage = false;
   Queue<CatModel> catQueue = Queue<CatModel>();
   StreamSubscription<LikedCatsState>? _cubitSubscription;
+  bool isOnline = true;
+  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
+  bool _isSnackbarVisible = false;
 
   @override
   void initState() {
     super.initState();
+    _checkInitialConnection();
+    _initConnectivity();
     _initCats();
+  }
+
+  Future<void> _checkInitialConnection() async {
+    final result = await Connectivity().checkConnectivity();
+    setState(() => isOnline = result != ConnectivityResult.none);
+    if (!isOnline) {
+      _showNetworkStatusSnackbar(false);
+    }
+  }
+
+  void _initConnectivity() async {
+    final result = await Connectivity().checkConnectivity();
+    _updateConnectionStatus(result);
+
+    _connectivitySubscription = Connectivity()
+        .onConnectivityChanged
+        .listen(_updateConnectionStatus);
+  }
+
+  void _updateConnectionStatus(ConnectivityResult result) {
+    final newStatus = result != ConnectivityResult.none;
+    if (newStatus != isOnline) {
+      if (mounted) {
+        setState(() => isOnline = newStatus);
+        _showNetworkStatusSnackbar(newStatus);
+      }
+    }
+  }
+
+  void _showNetworkStatusSnackbar(bool connected) {
+    if (!mounted || _isSnackbarVisible) return;
+
+    _isSnackbarVisible = true;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(connected ? Icons.wifi : Icons.wifi_off, color: Colors.white),
+            SizedBox(width: 8),
+            Text(connected ? 'Online' : 'Offline'),
+          ],
+        ),
+        backgroundColor: connected ? Colors.green : Colors.red,
+        duration: Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        margin: EdgeInsets.all(10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+    ).closed.then((_) {
+      _isSnackbarVisible = false;
+    });
   }
 
   void _initCats() {
     fetchMoreCats().then((_) => fetchNextCat());
-  }
-
-  void _setupCubitListener() {
-    _cubitSubscription = getIt<CatCubit>().stream.listen((state) {
-      if (mounted) {
-        setState(() {});
-        _setupCubitListener();
-        _setupDbListener();
-      }
-    });
-  }
-
-  void _setupDbListener() {
-    db.cats.select().watch().listen((_) {
-      getIt<CatCubit>().refreshState();
-    });
   }
 
   @override
@@ -114,6 +156,19 @@ class CatHomePageState extends State<CatHomePage> {
   }
 
   Future<void> fetchMoreCats() async {
+    if (!isOnline) {
+      _showNetworkStatusSnackbar(false);
+      final cachedCats = await db.getAllCats();
+      if (cachedCats.isNotEmpty) {
+        setState(() {
+          catQueue.addAll(cachedCats);
+        });
+        return;
+      }
+      showErrorDialog('Нет интернет-соединения и кэшированных данных');
+      return;
+    }
+
     final myApiKey = dotenv.env['API_KEY'] ?? '';
 
     try {
@@ -168,7 +223,7 @@ class CatHomePageState extends State<CatHomePage> {
   }
 
   void openLikedCatsPage() async {
-    final updatedLikedCats = await Navigator.push(
+    await Navigator.push(
       context,
       MaterialPageRoute(
         builder:
@@ -233,7 +288,9 @@ class CatHomePageState extends State<CatHomePage> {
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Dismissible(
                         key: Key(imageUrl),
-                        direction: DismissDirection.horizontal,
+                        direction: isOnline
+                            ? DismissDirection.horizontal
+                            : DismissDirection.none,
                         onDismissed: (direction) {
                           if (direction == DismissDirection.startToEnd) {
                             likeCat();
@@ -319,8 +376,8 @@ class CatHomePageState extends State<CatHomePage> {
                       Column(
                         children: [
                           IconButton(
-                            onPressed: dislikeCat,
-                            icon: const Icon(
+                            onPressed: isOnline ? dislikeCat : null,
+                            icon: Icon(
                               Icons.heart_broken,
                               color: Colors.red,
                               size: 64,
@@ -335,8 +392,8 @@ class CatHomePageState extends State<CatHomePage> {
                       Column(
                         children: [
                           IconButton(
-                            onPressed: likeCat,
-                            icon: const Icon(
+                            onPressed: isOnline ? likeCat : null,
+                            icon: Icon(
                               Icons.favorite,
                               color: Colors.green,
                               size: 64,

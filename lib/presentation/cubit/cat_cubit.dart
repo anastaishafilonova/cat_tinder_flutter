@@ -12,11 +12,12 @@ class CatCubit extends Cubit<LikedCatsState> {
   final LikedCatsRepository _repository;
   StreamSubscription? _dbSubscription;
 
-  CatCubit(this._repository) : super(LikedCatsState([], 0, 0)) {
+  CatCubit(this._repository, {bool skipInitialLoad = false}) : super(LikedCatsState([], 0, 0)) {
     _setupDbListener();
-    _loadInitialData();
+    if (!skipInitialLoad) {
+      _loadInitialData();
+    }
   }
-
   void _setupDbListener() {
     _dbSubscription = _repository.watchChanges().listen((_) {
       _refreshState();
@@ -75,4 +76,21 @@ class LikedCatsState {
   final int dislikeCount;
 
   LikedCatsState(this.likedCats, this.likeCount, this.dislikeCount);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          other is LikedCatsState &&
+              runtimeType == other.runtimeType &&
+              likedCats == other.likedCats &&
+              likeCount == other.likeCount &&
+              dislikeCount == other.dislikeCount;
+
+  @override
+  int get hashCode => likedCats.hashCode ^ likeCount.hashCode ^ dislikeCount.hashCode;
+
+  @override
+  String toString() {
+    return 'LikedCatsState{likedCats: $likedCats, likeCount: $likeCount, dislikeCount: $dislikeCount}';
+  }
 }
